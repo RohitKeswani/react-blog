@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const config = require('./config/key');
 
+const {auth} = require('./middleware/auth');
 const {User} = require('./models/user');
 
 mongoose.connect(config.mongoURI, 
@@ -57,8 +58,16 @@ app.post('/api/user/login', (req, res)=>{
         })
     });
 })
-app.get('/',function (req, res){
-    res.send("Hello, Rohit")
-});
+
+app.get('/api/user/auth', auth,  (req, res)=>{
+    res.status(200).json({
+        _id: req._id,
+        isAuth : true,
+        email : req.user.email,
+        firstName : req.user.firstName,
+        lastName : req.user.lastName,
+        role: req.user.role
+    })
+})
 
 app.listen(5000);
